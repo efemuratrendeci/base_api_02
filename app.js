@@ -10,12 +10,14 @@ import authRoutes from './routes/auth.js';
 import ErrorController from './controller/ErrorController.js';
 import AppInfo from './core/AppInfo.js';
 import AppBuilder from './core/AppBuilder.js';
+import ApiOptions from './middlewares/ApiOptions.js';
 // ────────────────────────────────────────────────────────────────────────────────
 //
 //* ─── INITIALIZE ────────────────────────────────────────────────────────────────
 //
 
 const errorController = new ErrorController();
+const _apiOptions = new ApiOptions();
 const app = express();
 
 app.use(cors());
@@ -30,9 +32,9 @@ app.use((req, res, next) => {
 //
 //* ─── ROUTING ───────────────────────────────────────────────────────────────────
 //
-app.use(`${process.env.BASE_ROUTE || ''}/auth`, authRoutes);
+app.use(`${process.env.BASE_ROUTE || ''}/auth`, _apiOptions.isHttpStatusDisabled, authRoutes);
 
-app.use('/', errorController.getNotFound);
+app.use('/', _apiOptions.isHttpStatusDisabled, errorController.getNotFound);
 app.use((error, req, res, next) => errorController.getSystemError(req, res, next, error));
 // ────────────────────────────────────────────────────────────────────────────────
 
